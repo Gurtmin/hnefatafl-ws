@@ -2,7 +2,6 @@ package com.example.hnefatafl;
 
 import com.example.hnefatafl.model.Game;
 import com.example.hnefatafl.repository.GameRepository;
-import com.example.hnefatafl.service.GameService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
