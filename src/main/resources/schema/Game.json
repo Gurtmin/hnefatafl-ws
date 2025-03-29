@@ -1,0 +1,13 @@
+{
+  "title": "Game",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    }
+  },
+  "required": ["type"]
+}

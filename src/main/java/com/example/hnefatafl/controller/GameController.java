@@ -2,7 +2,7 @@ package com.example.hnefatafl.controller;
 
 import com.example.hnefatafl.model.Game;
 import com.example.hnefatafl.service.GameService;
-import org.springframework.http.ResponseEntity;
+import com.example.model.GameCreateRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +18,11 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<Game> createGame(@RequestBody Game request) {
-        return ResponseEntity.ok(gameService.startNewGame(request.getType()));
+    public Game startNewGame(@RequestBody GameCreateRequest request) {
+        return gameService.startNewGame(request.getType());
     }
-
     @GetMapping
-    public ResponseEntity<List<Game>> getAllGames() {
-        return ResponseEntity.ok(gameService.getAllGames());
+    public List<Game> getAllGames() {
+        return gameService.getAllGames();
     }
 }

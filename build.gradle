@@ -1,7 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.2'
+    id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.jsonschema2pojo' version '1.2.2'
 }
 
 group = 'com.example'
@@ -12,47 +13,29 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    openapiGenerator
-}
-
 dependencies {
-    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.mockito:mockito-core:5.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    openapiGenerator 'org.openapitools:openapi-generator-cli:7.3.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-task generateApi(type: JavaExec) {
-    group = 'openapi'
-    description = 'Generates Java DTOs from OpenAPI spec'
-    classpath = configurations.openapiGenerator
-    mainClass.set('org.openapitools.codegen.OpenAPIGenerator')
-    args = [
-        'generate',
-        '-i', 'openapi/api.yaml',
-        '-g', 'java',
-        '-o', 'build/generated',
-        '--additional-properties=library=resttemplate,useSpringBoot=true,useJakartaEe=true,apiPackage=com.example.api,modelPackage=com.example.model,invokerPackage=com.example.invoker'
-    ]
+jsonSchema2Pojo {
+    source = files("src/main/resources/schemas")
+    targetPackage = "com.example.demo.model"
+    targetDirectory = file("$buildDir/generated-sources/js2p")
+    includeGeneratedAnnotation = true
+    useJakartaValidation = true
 }
 
 sourceSets {
     main {
         java {
-            srcDirs += ['build/generated/src/main/java']
+            srcDir 'build/generated/src/main/java'
+//            srcDirs += "$buildDir/generated-sources/js2p"
         }
     }
-}
-
-compileJava.dependsOn generateApi
-
-
-task mongo(type: Exec) {
-    group = "infra"
-    description = "Spustí MongoDB pomocí docker-compose"
-    workingDir = file("infra")
-    commandLine "docker-compose", "up", "-d"
 }
