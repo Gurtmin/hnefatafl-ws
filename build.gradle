@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    openapiGenerator
+}
+
+dependencies {
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core:5.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    openapiGenerator 'org.openapitools:openapi-generator-cli:7.3.0'
+}
+
+task generateApi(type: JavaExec) {
+    group = 'openapi'
+    description = 'Generates Java DTOs from OpenAPI spec'
+    classpath = configurations.openapiGenerator
+    mainClass.set('org.openapitools.codegen.OpenAPIGenerator')
+    args = [
+        'generate',
+        '-i', 'openapi/api.yaml',
+        '-g', 'java',
+        '-o', 'build/generated',
+        '--additional-properties=library=resttemplate,useSpringBoot=true,useJakartaEe=true,apiPackage=com.example.api,modelPackage=com.example.model,invokerPackage=com.example.invoker'
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += ['build/generated/src/main/java']
+        }
+    }
+}
+
+compileJava.dependsOn generateApi
+
+
+task mongo(type: Exec) {
+    group = "infra"
+    description = "Spustí MongoDB pomocí docker-compose"
+    workingDir = file("infra")
+    commandLine "docker-compose", "up", "-d"
+}
