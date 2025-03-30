@@ -1,0 +1,304 @@
+openapi: 3.0.1
+info:
+  title: Hnefatafl API
+  version: 1.0.0
+
+paths:
+  /games:
+    post:
+      summary: Start a new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameCreateRequest'
+      responses:
+        '200':
+          description: Game started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+    patch:
+      summary: Rename game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameChangeNameRequest'
+      responses:
+        '200':
+          description: Game started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+    get:
+      summary: Get paginated list of games
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '200':
+          description: Paginated list of games
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedGameResponse'
+
+  /games/{id}:
+    get:
+      summary: Get game by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '404':
+          description: Game not found
+
+  /games/{id}/board:
+    get:
+      summary: Get game board
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Board state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+
+  /games/{id}/board/selected-tile:
+    get:
+      summary: Get selected tile and allowed moves
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Currently selected tile with allowed moves
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelectedTileInfo'
+        '404':
+          description: No tile selected
+
+  /games/{id}/board/select-tile:
+    post:
+      summary: Select a tile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TilePosition'
+      responses:
+        '200':
+          description: Tile selected
+
+  /games/{id}/board/move-tile:
+    post:
+      summary: Move selected tile to new position
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TilePosition'
+      responses:
+        '200':
+          description: Tile moved
+
+components:
+  schemas:
+    GameCreateRequest:
+      type: object
+      properties:
+        type:
+          type: string
+      required:
+        - type
+
+    GameChangeNameRequest:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/GameName'
+      required:
+        - id
+        - type
+
+    GameChangeStateRequest:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        state:
+          $ref: '#/components/schemas/State'
+      required:
+        - id
+        - state
+
+    Game:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/GameName'
+        state:
+          $ref: '#/components/schemas/State'
+        activePlayer:
+          $ref: '#/components/schemas/ActivePlayer'
+        player1:
+          $ref: '#/components/schemas/Player'
+        player2:
+          $ref: '#/components/schemas/Player'
+        board:
+          $ref: '#/components/schemas/Board'
+      required:
+        - id
+        - type
+        - state
+        - activePlayer
+        - player1
+        - player2
+        - board
+
+    Player:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    ActivePlayer:
+      type: string
+      enum: [player1, player2]
+
+    Tile:
+      type: string
+      enum: [Empty, Odin, Monster, Warrior, Throne, Exit]
+
+    State:
+      type: string
+      enum: [Open, Started, Over]
+
+    Id:
+      type: string
+    GameName:
+      type: string
+
+    TilePosition:
+      type: object
+      properties:
+        x:
+          type: integer
+          minimum: 1
+          maximum: 11
+        y:
+          type: integer
+          minimum: 1
+          maximum: 11
+      required:
+        - x
+        - y
+
+    SelectedTileInfo:
+      type: object
+      properties:
+        selectedTile:
+          $ref: '#/components/schemas/TilePosition'
+        allowedMoves:
+          type: array
+          items:
+            $ref: '#/components/schemas/TilePosition'
+      required:
+        - selectedTile
+
+    Board:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            type: object
+            properties:
+              cols:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tile'
+                minItems: 11
+                maxItems: 11
+            required:
+              - cols
+          minItems: 11
+          maxItems: 11
+        selectedTile:
+          $ref: '#/components/schemas/TilePosition'
+      required:
+        - rows
+
+    PagedGameResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Game'
+        page:
+          type: integer
+        size:
+          type: integer
+        total:
+          type: integer
+      required:
+        - items
+        - page
+        - size
+        - total

@@ -1,10 +1,11 @@
 package com.example.hnefatafl.service;
 
-import com.example.hnefatafl.model.Game;
+import com.example.hnefatafl.model.MongoGame;
 import com.example.hnefatafl.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GameService {
@@ -15,11 +16,17 @@ public class GameService {
         this.gameRepository = gameRepository;
     }
 
-    public Game startNewGame(String type) {
-        return gameRepository.save(new Game(type));
+    public MongoGame startNewGame(String type) {
+        MongoGame mongoGame = new MongoGame();
+        mongoGame.setType(type);
+        return gameRepository.save(mongoGame);
     }
 
-    public List<Game> getAllGames() {
+    public List<MongoGame> getAllGames() {
         return gameRepository.findAll();
+    }
+
+    public Optional<MongoGame> changeGameName(String id, String type) {
+        return gameRepository.findById( id);
     }
 }

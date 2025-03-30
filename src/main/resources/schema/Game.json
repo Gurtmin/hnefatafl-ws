@@ -1,13 +1,67 @@
 {
   "title": "Game",
   "type": "object",
-  "properties": {
-    "id": {
-      "type": "string"
+  "definitions": {
+    "Player": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
     },
-    "type": {
-      "type": "string"
+    "Tile": {
+      "type": "string",
+      "enum": ["Empty", "Odin", "Monster", "Warrior", "Throne", "Exit"]
+    },
+    "TilePosition": {
+      "type": "object",
+      "properties": {
+        "x": { "type": "integer", "minimum": 1, "maximum": 11 },
+        "y": { "type": "integer", "minimum": 1, "maximum": 11 }
+      },
+      "required": ["x", "y"]
+    },
+    "Board": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cols": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/Tile" },
+                "minItems": 11,
+                "maxItems": 11
+              }
+            },
+            "required": ["cols"]
+          },
+          "minItems": 11,
+          "maxItems": 11
+        },
+        "selectedTile": {
+          "$ref": "#/definitions/TilePosition"
+        }
+      },
+      "required": ["rows"]
     }
   },
-  "required": ["type"]
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "player1": { "$ref": "#/definitions/Player" },
+    "player2": { "$ref": "#/definitions/Player" },
+    "activePlayer": {
+      "type": "string",
+      "enum": ["player1", "player2"]
+    },
+    "state": {
+      "type": "string",
+      "enum": ["open", "started", "over"]
+    },
+    "board": { "$ref": "#/definitions/Board" }
+  },
+  "required": ["type", "player1", "player2", "activePlayer", "state", "board"]
 }

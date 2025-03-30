@@ -4,14 +4,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class Game {
+public class GameZaloha {
     @Id
     private String id;
     private String type;
 
-    public Game() {}
+    public GameZaloha() {}
 
-    public Game(String type) {
+    public GameZaloha(String type) {
         this.type = type;
     }
 
