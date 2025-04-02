@@ -1,9 +1,13 @@
 package com.example.hnefatafl.controller;
 
+import com.example.api.model.Game;
 import com.example.api.model.GameChangeNameRequest;
+import com.example.api.model.PagedGameResponse;
 import com.example.hnefatafl.model.MongoGame;
 import com.example.hnefatafl.service.GameService;
 import com.example.api.model.GameCreateRequest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,16 +24,27 @@ public class GameController {
     }
 
     @PatchMapping
-    public Optional<MongoGame> renameGame(@RequestBody GameChangeNameRequest request) {
-        return gameService.changeGameName(request.getId(), request.getType());
+    public ResponseEntity<MongoGame> renameGame(@RequestBody GameChangeNameRequest request) {
+        MongoGame updated = gameService.changeGameName(request.getId(), request.getType());
+        return ResponseEntity.ok( updated);
     }
 
     @PostMapping
-    public MongoGame startNewGame(@RequestBody GameCreateRequest request) {
-        return gameService.startNewGame(request.getType());
+    public MongoGame createNewGame(@RequestBody GameCreateRequest request) {
+        return gameService.createNewGame(request.getType());
     }
     @GetMapping
-    public List<MongoGame> getAllGames() {
-        return gameService.getAllGames();
+    public ResponseEntity<PagedGameResponse> getAllGames(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        PagedGameResponse response = gameService.getAllGames(PageRequest.of(page, size));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Game> getGameById(@PathVariable String id) {
+        Game game = gameService.getGameById(String.valueOf(id));
+        return ResponseEntity.ok(game);
     }
 }

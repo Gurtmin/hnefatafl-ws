@@ -44,6 +44,22 @@ task generateApi(type: JavaExec) {
     ]
 }
 
+task generateFrontendApi(type: JavaExec) {
+    group = 'openapi'
+    description = 'Generuje kód z OpenAPI specifikace'
+    classpath = configurations.openapiGenerator
+    mainClass.set('org.openapitools.codegen.OpenAPIGenerator')
+
+    args = [
+            'generate',
+            '-g', 'typescript-fetch',
+            '-i', 'src/main/resources/openapi/api.yaml',
+            '-o', "$buildDir/generated-frontend",
+            '--additional-properties=supportsES6=true,typescriptThreePlus=true,modelPropertyNaming=camelCase'
+    ]
+}
+
+
 jsonSchema2Pojo {
     source = files("src/main/resources/schema")
     targetPackage = "com.example.mongo.model"

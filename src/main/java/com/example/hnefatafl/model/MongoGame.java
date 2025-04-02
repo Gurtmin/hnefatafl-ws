@@ -1,7 +1,7 @@
 package com.example.hnefatafl.model;
 
-import com.example.model.mongo.Game;
 import org.springframework.data.annotation.Id;
+import com.example.mongo.model.Game;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -9,6 +9,7 @@ public class MongoGame extends Game {
 
     @Id
     private String id;
+    private String type;
 
     public String getId() {
         return id;
