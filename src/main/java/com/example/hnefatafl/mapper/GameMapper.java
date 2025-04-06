@@ -59,6 +59,11 @@ public class GameMapper {
     }
 
     private static Tile toApiTile(com.example.mongo.model.Tile tile) {
-        return Tile.fromValue( tile.value());
+        Tile newTile = new Tile();
+        newTile.setFigure( Tile.FigureEnum.fromValue(tile.getFigure().value()));
+        newTile.setIsEnabled(tile.getIsEnabled());
+        newTile.setIsMoveEnabled(tile.getIsMoveEnabled());
+        newTile.setIsSelected(tile.getIsSelected());
+        return newTile;
     }
 }

@@ -222,13 +222,22 @@ components:
       enum: [player1, player2]
 
     Tile:
-      type: string
-      enum: [Empty, Odin, Monster, Warrior, Throne, Exit]
-
+      type: object
+      properties:
+        figure:
+          type: string
+          enum: [Empty, Odin, Monster, Warrior, Throne, Exit]
+        isSelected:
+          type: boolean
+        isEnabled:
+          type: boolean
+        isMoveEnabled:
+          type: boolean
+      required:
+        - figure
     State:
       type: string
       enum: [Open, Started, Over]
-
     Id:
       type: string
     GameName:

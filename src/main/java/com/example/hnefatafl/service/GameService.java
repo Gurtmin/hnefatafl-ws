@@ -2,6 +2,7 @@ package com.example.hnefatafl.service;
 
 import com.example.api.model.Game;
 import com.example.api.model.PagedGameResponse;
+import com.example.hnefatafl.exception.ObjectAlreadyExistsException;
 import com.example.hnefatafl.exception.ObjectNotFoundException;
 import com.example.hnefatafl.mapper.GameMapper;
 import com.example.hnefatafl.model.MongoGame;
@@ -28,8 +29,8 @@ public class GameService {
     }
 
     public MongoGame createNewGame(String type) {
-        if( gameRepository.findById(type).isEmpty())
-            throw new ObjectNotFoundException(type);
+        if( type.isBlank() || !gameRepository.findByType(type).isEmpty())
+            throw new ObjectAlreadyExistsException(type);
 
         MongoGame mongoGame = new MongoGame();
         mongoGame.setType(type);
@@ -51,24 +52,28 @@ public class GameService {
     }
 
     private Tile getTileByOrigin(int row, int col) {
+        Tile newTile = new Tile();
+
         if( (row==0 && col==0) || (row==0 && col==10) || (row==10 && col==0) || (row==10 && col==10))
-            return Tile.EXIT;
-        if(
+            newTile.setFigure( Tile.Figure.EXIT);
+        else if(
             (row>2 && row<8 && (col==0 || col==10)) ||
             (col>2 && col<8 && (row==0 || row==10)) ||
             ((row==5) && (col==1 || col==9)) ||
             ((col==5) && (row==1 || row==9))
         )
-            return Tile.WARRIOR;
-        if(col==5 && row==5)
-            return Tile.ODIN;
-        if(
+            newTile.setFigure( Tile.Figure.WARRIOR);
+        else if(col==5 && row==5)
+            newTile.setFigure( Tile.Figure.ODIN);
+        else if(
              (row>3 && row<7 && col>3 && col<7) ||
              ((row==5) && (col==3 || col==7)) ||
              ((col==5) && (row==3 || row==7))
         )
-            return Tile.MONSTER;
-        return Tile.EMPTY;
+            newTile.setFigure( Tile.Figure.MONSTER);
+        else newTile.setFigure( Tile.Figure.EMPTY);
+
+        return newTile;
     }
 
     public PagedGameResponse getAllGames(Pageable pageable) {
@@ -82,7 +87,7 @@ public class GameService {
                 result,
                 Integer.valueOf( gamePage.getNumber()),
                 Integer.valueOf( gamePage.getSize()),
-                Integer.valueOf( result.size())
+                Integer.valueOf( gamePage.getTotalPages())
         );
     }
 
