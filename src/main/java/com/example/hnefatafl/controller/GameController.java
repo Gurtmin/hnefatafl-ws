@@ -1,11 +1,8 @@
 package com.example.hnefatafl.controller;
 
-import com.example.api.model.Game;
-import com.example.api.model.GameChangeNameRequest;
-import com.example.api.model.PagedGameResponse;
+import com.example.api.model.*;
 import com.example.hnefatafl.model.MongoGame;
 import com.example.hnefatafl.service.GameService;
-import com.example.api.model.GameCreateRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +21,10 @@ public class GameController {
     }
 
     @PatchMapping
-    public ResponseEntity<MongoGame> renameGame(@RequestBody GameChangeNameRequest request) {
+    public ResponseEntity<MongoGame> renameGame(
+            @RequestBody GameChangeNameRequest request
+    )
+    {
         MongoGame updated = gameService.changeGameName(request.getId(), request.getType());
         return ResponseEntity.ok( updated);
     }
@@ -46,5 +46,23 @@ public class GameController {
     public ResponseEntity<Game> getGameById(@PathVariable String id) {
         Game game = gameService.getGameById(String.valueOf(id));
         return ResponseEntity.ok(game);
+    }
+
+    @PostMapping("/{id}/board/select-tile")
+    public ResponseEntity<Game> selectTile(
+            @RequestBody SelectTileRequest request,
+            @PathVariable String id) {
+        Game game = gameService.selectTile(String.valueOf(id), request.getX(), request.getY());
+        return ResponseEntity.ok(game);
+    }
+
+    @PostMapping("/{id}/join")
+    public ResponseEntity<JoinPlayerResponse> joinPlayer(
+            @RequestBody JoinPlayerRequest request,
+            @PathVariable String id
+    ) {
+        JoinPlayerResponse response = new JoinPlayerResponse();
+        response.setPlayer( gameService.join(id, request));
+        return ResponseEntity.ok(response);
     }
 }

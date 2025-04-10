@@ -8,21 +8,17 @@ public class GameMapper {
         Game apiGame = new Game();
         apiGame.setId(mongoGame.getId());
         apiGame.setType(mongoGame.getType());
-
         apiGame.setState( toApiState(mongoGame.getState()));
-        apiGame.setActivePlayer( toApiActivePlayer( mongoGame.getActivePlayer()));
-
-        apiGame.setPlayer1(toApiPlayer(mongoGame.getPlayer1()));
-        apiGame.setPlayer2(toApiPlayer(mongoGame.getPlayer2()));
         apiGame.setBoard(toApiBoard(mongoGame.getBoard()));
 
-        return apiGame;
-    }
+        apiGame.setPlayers( new GamePlayers( ActivePlayer.fromValue( mongoGame.getPlayers().getActive().value())));
+        if(mongoGame.getPlayers().getMonster()!=null)
+            apiGame.getPlayers().setMonster( new Player( mongoGame.getPlayers().getMonster().getName()));
+        if(mongoGame.getPlayers().getViking()!=null)
+            apiGame.getPlayers().setViking( new Player( mongoGame.getPlayers().getViking().getName()));
+        apiGame.getPlayers().setMe( mongoGame.joined());
 
-    private static Player toApiPlayer(com.example.mongo.model.Player mongoPlayer) {
-        if(mongoPlayer==null)
-            return null;
-        return new Player(mongoPlayer.toString());
+        return apiGame;
     }
 
     private static State toApiState(com.example.mongo.model.Game.State mongoState){
@@ -30,13 +26,8 @@ public class GameMapper {
             return null;
         return State.fromValue( mongoState.value());
     }
-    private static ActivePlayer toApiActivePlayer(com.example.mongo.model.Game.ActivePlayer activePlayer){
-        if(activePlayer==null)
-            return null;
-        return ActivePlayer.fromValue( activePlayer.value());
-    }
 
-    private static Board toApiBoard(com.example.mongo.model.Board mongoBoard) {
+    public static Board toApiBoard(com.example.mongo.model.Board mongoBoard) {
         Board apiBoard = new Board();
         if(mongoBoard!=null) {
             mongoBoard.getRows().forEach(row -> {

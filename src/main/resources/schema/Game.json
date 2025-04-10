@@ -5,9 +5,10 @@
     "Player": {
       "type": "object",
       "properties": {
-        "name": { "type": "string" }
+        "clientId": { "type": "string", "default": "" },
+        "name": { "type": "string", "default": "" }
       },
-      "required": ["name"]
+      "required": ["clientId","name"]
     },
     "Tile": {
       "type": "object",
@@ -73,11 +74,18 @@
   "properties": {
     "id": { "type": "string" },
     "type": { "type": "string" },
-    "player1": { "$ref": "#/definitions/Player" },
-    "player2": { "$ref": "#/definitions/Player" },
-    "activePlayer": {
-      "type": "string",
-      "enum": ["player1", "player2"]
+    "players": {
+      "type": "object",
+      "properties": {
+        "monster": { "$ref": "#/definitions/Player" },
+        "viking": { "$ref": "#/definitions/Player" },
+        "active": {
+          "type": "string",
+          "enum": ["Monster", "Viking"],
+          "default": "Viking"
+        }
+      },
+      "required": ["active", "viking", "monster"]
     },
     "state": {
       "type": "string",
@@ -85,5 +93,5 @@
     },
     "board": { "$ref": "#/definitions/Board" }
   },
-  "required": ["type", "player1", "player2", "activePlayer", "state", "board"]
+  "required": ["type", "players", "state", "board"]
 }

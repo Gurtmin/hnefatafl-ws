@@ -112,6 +112,30 @@ paths:
                 $ref: '#/components/schemas/SelectedTileInfo'
         '404':
           description: No tile selected
+  /games/{id}/join:
+    post:
+      summary: Try to change player
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinPlayerRequest'
+      responses:
+        '200':
+          description: New player role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinPlayerResponse'
+        '404':
+          description: No tile selected
 
   /games/{id}/board/select-tile:
     post:
@@ -127,10 +151,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TilePosition'
+              $ref: '#/components/schemas/SelectTileRequest'
       responses:
         '200':
-          description: Tile selected
+          description: Game overview after tileSelection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
 
   /games/{id}/board/move-tile:
     post:
@@ -146,12 +174,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TilePosition'
+              $ref: '#/components/schemas/MoveTileRequest'
       responses:
         '200':
           description: Tile moved
 
+security:
+  - ClientIdAuth: []
+
 components:
+  securitySchemes:
+    ClientIdAuth:
+      type: apiKey
+      in: header
+      name: X-Client-ID
+      description: Identifikátor klienta pro autentizaci
   schemas:
     GameCreateRequest:
       type: object
@@ -171,6 +208,16 @@ components:
       required:
         - id
         - type
+    JoinPlayerRequest:
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/PlayerEnum'
+    JoinPlayerResponse:
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/PlayerEnum'
 
     GameChangeStateRequest:
       type: object
@@ -192,21 +239,26 @@ components:
           $ref: '#/components/schemas/GameName'
         state:
           $ref: '#/components/schemas/State'
-        activePlayer:
-          $ref: '#/components/schemas/ActivePlayer'
-        player1:
-          $ref: '#/components/schemas/Player'
-        player2:
-          $ref: '#/components/schemas/Player'
+        players:
+          type: object
+          properties:
+            me:
+                $ref: '#/components/schemas/PlayerEnum'
+            active:
+              $ref: '#/components/schemas/ActivePlayer'
+            viking:
+              $ref: '#/components/schemas/Player'
+            monster:
+              $ref: '#/components/schemas/Player'
+          required:
+            - active
         board:
           $ref: '#/components/schemas/Board'
       required:
         - id
         - type
         - state
-        - activePlayer
-        - player1
-        - player2
+        - players
         - board
 
     Player:
@@ -219,7 +271,10 @@ components:
 
     ActivePlayer:
       type: string
-      enum: [player1, player2]
+      enum: [Viking, Monster]
+    PlayerEnum:
+      type: string
+      enum: [Viking, Monster, Both]
 
     Tile:
       type: object
@@ -242,7 +297,12 @@ components:
       type: string
     GameName:
       type: string
-
+    SelectTileRequest:
+      allOf:
+        - $ref: '#/components/schemas/TilePosition'
+    MoveTileRequest:
+      allOf:
+        - $ref: '#/components/schemas/TilePosition'
     TilePosition:
       type: object
       properties:
