@@ -17,6 +17,8 @@
           "type": "string",
           "enum": [
             "Empty",
+            "DeadOdin",
+            "EscapedOdin",
             "Odin",
             "Monster",
             "Warrior",
@@ -89,7 +91,7 @@
     },
     "state": {
       "type": "string",
-      "enum": ["open", "started", "over"]
+      "enum": ["Open", "Started", "Over"]
     },
     "board": { "$ref": "#/definitions/Board" }
   },

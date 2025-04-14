@@ -274,14 +274,14 @@ components:
       enum: [Viking, Monster]
     PlayerEnum:
       type: string
-      enum: [Viking, Monster, Both]
+      enum: [None, Viking, Monster, Both]
 
     Tile:
       type: object
       properties:
         figure:
           type: string
-          enum: [Empty, Odin, Monster, Warrior, Throne, Exit]
+          enum: [Empty, Odin, DeadOdin, EscapedOdin, Monster, Warrior, Throne, Exit]
         isSelected:
           type: boolean
         isEnabled:

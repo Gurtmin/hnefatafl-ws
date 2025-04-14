@@ -1,60 +1,57 @@
-package com.example.hnefatafl.mapper;
+package com.example.hnefatafl.mapper
 
-import com.example.api.model.*;
-import com.example.hnefatafl.model.MongoGame;
+import com.example.api.model.*
+import com.example.hnefatafl.model.MongoGame
+import com.example.mongo.model.Board
+import com.example.mongo.model.Row
+import com.example.mongo.model.Tile
+import com.example.mongo.model.TilePosition
+import java.util.function.Consumer
 
-public class GameMapper {
-    public static Game toApiGame(MongoGame mongoGame) {
-        Game apiGame = new Game();
-        apiGame.setId(mongoGame.getId());
-        apiGame.setType(mongoGame.getType());
-        apiGame.setState( toApiState(mongoGame.getState()));
-        apiGame.setBoard(toApiBoard(mongoGame.getBoard()));
-
-        apiGame.setPlayers( new GamePlayers( ActivePlayer.fromValue( mongoGame.getPlayers().getActive().value())));
-        if(mongoGame.getPlayers().getMonster()!=null)
-            apiGame.getPlayers().setMonster( new Player( mongoGame.getPlayers().getMonster().getName()));
-        if(mongoGame.getPlayers().getViking()!=null)
-            apiGame.getPlayers().setViking( new Player( mongoGame.getPlayers().getViking().getName()));
-        apiGame.getPlayers().setMe( mongoGame.joined());
-
-        return apiGame;
+object GameMapper {
+    @JvmStatic
+    fun toApiGame(mongoGame: MongoGame): Game {
+        val apiGame = Game()
+        apiGame.id = mongoGame.id
+        apiGame.type = mongoGame.type
+        apiGame.state = toApiState(mongoGame.state)
+        apiGame.board = toApiBoard(mongoGame.board)
+        apiGame.players = GamePlayers(ActivePlayer.fromValue(mongoGame.players.active.value()))
+//        if (mongoGame.players.monster != null)
+            apiGame.players.monster = Player(mongoGame.players.monster.name)
+//        if (mongoGame.players.viking != null)
+            apiGame.players.viking = Player(mongoGame.players.viking.name)
+        apiGame.players.me = mongoGame.joined()
+        return apiGame
     }
 
-    private static State toApiState(com.example.mongo.model.Game.State mongoState){
-        if(mongoState==null)
-            return null;
-        return State.fromValue( mongoState.value());
+    private fun toApiState(mongoState: com.example.mongo.model.Game.State?): State? {
+        return if (mongoState == null) null else State.fromValue(mongoState.value())
     }
 
-    public static Board toApiBoard(com.example.mongo.model.Board mongoBoard) {
-        Board apiBoard = new Board();
-        if(mongoBoard!=null) {
-            mongoBoard.getRows().forEach(row -> {
-                BoardRowsInner newRow = new BoardRowsInner();
-                row.getCols().forEach(col -> {
-                    newRow.addColsItem(toApiTile(col));
-                });
-                apiBoard.addRowsItem(newRow);
-            });
-            apiBoard.setSelectedTile( toApiTilePosition(mongoBoard.getSelectedTile()));
+    fun toApiBoard(mongoBoard: Board?): com.example.api.model.Board {
+        val apiBoard = com.example.api.model.Board()
+        if (mongoBoard != null) {
+            mongoBoard.rows.forEach(Consumer { row: Row ->
+                val newRow = BoardRowsInner()
+                row.cols.forEach(Consumer { col: Tile -> newRow.addColsItem(toApiTile(col)) })
+                apiBoard.addRowsItem(newRow)
+            })
+            apiBoard.selectedTile = toApiTilePosition(mongoBoard.selectedTile)
         }
-
-        return apiBoard;
+        return apiBoard
     }
 
-    private static TilePosition toApiTilePosition(com.example.mongo.model.TilePosition position) {
-        if(position==null)
-            return null;
-        return new TilePosition(position.getX(),position.getY());
+    private fun toApiTilePosition(position: TilePosition?): com.example.api.model.TilePosition? {
+        return if (position == null) null else TilePosition(position.x, position.y)
     }
 
-    private static Tile toApiTile(com.example.mongo.model.Tile tile) {
-        Tile newTile = new Tile();
-        newTile.setFigure( Tile.FigureEnum.fromValue(tile.getFigure().value()));
-        newTile.setIsEnabled(tile.getIsEnabled());
-        newTile.setIsMoveEnabled(tile.getIsMoveEnabled());
-        newTile.setIsSelected(tile.getIsSelected());
-        return newTile;
+    private fun toApiTile(tile: Tile): com.example.api.model.Tile {
+        val newTile = com.example.api.model.Tile()
+        newTile.figure = com.example.api.model.Tile.FigureEnum.fromValue(tile.figure.value())
+        newTile.isEnabled = tile.isEnabled
+        newTile.isMoveEnabled = tile.isMoveEnabled
+        newTile.isSelected = tile.isSelected
+        return newTile
     }
 }
