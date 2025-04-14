@@ -2,7 +2,7 @@
 FROM gradle:7.6.0-jdk17 AS build
 WORKDIR /app
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN gradle bootJar --no-daemon --stacktrace
 
 # Fáze 2: Spuštění aplikace
 FROM openjdk:17-jdk-slim
