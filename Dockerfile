@@ -15,7 +15,8 @@ USER appuser
 WORKDIR /app
 
 # Zkopíruj výsledný JAR ze stage "build"
-COPY --from=build /build/build/libs/*-boot.jar app.jar
+#COPY --from=build /build/build/libs/*-boot.jar app.jar
+COPY --from=build /build/build/libs/hnefatafl-ws.jar app.jar
 
 EXPOSE 8080
 
