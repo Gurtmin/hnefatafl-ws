@@ -69,29 +69,29 @@ class MongoGame : Game() {
 
     fun joinMeAsViking() {
         if ((players?.viking?.clientId?:"").isBlank())
-            players.viking.clientId = RequestContext.getClientId()
+            players.viking.clientId = RequestContext.clientId
     }
 
     fun joinMeAsMonster() {
         if ((players?.monster?.clientId?:"").isBlank())
-            players.monster.clientId = RequestContext.getClientId()
+            players.monster.clientId = RequestContext.clientId
     }
 
     fun unJoinMeAsViking() {
-        if (players?.viking?.clientId == RequestContext.getClientId())
+        if (players?.viking?.clientId == RequestContext.clientId)
             players.viking.clientId = null
     }
 
     fun unJoinMeAsMonster() {
-        if (players?.monster?.clientId == RequestContext.getClientId())
+        if (players?.monster?.clientId == RequestContext.clientId)
             players.monster.clientId = null
     }
 
     fun joined(): PlayerEnum? {
         var result: PlayerEnum? = null
-        if (players?.monster?.clientId == RequestContext.getClientId())
+        if (players?.monster?.clientId == RequestContext.clientId)
             result = PlayerEnum.MONSTER
-        if (players?.viking?.clientId == RequestContext.getClientId())
+        if (players?.viking?.clientId == RequestContext.clientId)
             result =
                 if (result == PlayerEnum.MONSTER) PlayerEnum.BOTH else PlayerEnum.VIKING
         return result

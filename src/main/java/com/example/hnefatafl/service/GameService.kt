@@ -20,7 +20,8 @@ import java.util.stream.Collectors
 @Service
 class GameService(private val gameRepository: GameRepository) {
     fun createNewGame(type: String): MongoGame {
-        if (type.isBlank() || !gameRepository.findByType(type).isEmpty()) throw ObjectAlreadyExistsException(type)
+        if (type.isBlank() || gameRepository.findByType(type)?.isNotEmpty() == true)
+            throw ObjectAlreadyExistsException(type)
         val mongoGame = MongoGame()
         mongoGame.type = type
         mongoGame.board = newBoard
@@ -35,14 +36,15 @@ class GameService(private val gameRepository: GameRepository) {
 
     fun join(id: String, request: JoinPlayerRequest): PlayerEnum? {
         val game = gameRepository.findById(id)
-            .orElseThrow { ObjectNotFoundException(id) }
+            .orElseThrow { ObjectNotFoundException(id) } ?: throw ObjectNotFoundException(id)
+
         if (request.player == null) {
             game.unJoinMeAsViking()
             game.unJoinMeAsMonster()
             gameRepository.save(game)
             return game.joined()
         }
-        when (request.player) {
+        else when (request.player!!) {
             PlayerEnum.NONE -> {
                 game.unJoinMeAsViking()
                 game.unJoinMeAsMonster()
@@ -68,7 +70,7 @@ class GameService(private val gameRepository: GameRepository) {
     }
 
     private val newBoard: Board
-        private get() {
+        get() {
             val newBoard = Board()
             for (rowIndex in 0..10) {
                 val newRow = Row()
@@ -90,13 +92,13 @@ class GameService(private val gameRepository: GameRepository) {
         return newTile
     }
 
-    fun getAllGames(pageable: Pageable?): PagedGameResponse {
+    fun getAllGames(pageable: Pageable): PagedGameResponse {
         val gamePage = gameRepository.findAll(pageable)
-        val result = gamePage.content.stream()
-            .map { game: MongoGame -> toApiGame(game) }
-            .collect(Collectors.toList())
+        val result = gamePage.content
+            .mapNotNull { game -> game?.let { toApiGame(it) } }
+
         return PagedGameResponse(
-            result,
+            result.toList(),
             Integer.valueOf(gamePage.number),
             Integer.valueOf(gamePage.size),
             Integer.valueOf(gamePage.totalPages)
@@ -104,31 +106,35 @@ class GameService(private val gameRepository: GameRepository) {
     }
 
     fun changeGameName(id: String, type: String?): MongoGame {
-        return gameRepository.findById(id)
-            .map { game: MongoGame ->
-                game.type = type
-                gameRepository.save(game)
-            }
-            .orElseThrow { ObjectNotFoundException(type) }
+        val game = gameRepository.findById(id)
+            .orElseThrow { ObjectNotFoundException(id) }
+            ?: throw ObjectNotFoundException(id)
+
+        game.type = type
+
+        return gameRepository.save(game)
     }
 
     fun getGameById(id: String): Game {
         val game = gameRepository.findById(id)
             .orElseThrow { ObjectNotFoundException(id) }
+            ?: throw ObjectNotFoundException(id)
+
         return toApiGame(game)
     }
 
     fun selectTile(gameId: String, x: Int, y: Int): Game {
         val game = gameRepository.findById(gameId)
             .orElseThrow { ObjectNotFoundException(gameId) }
+            ?: throw ObjectNotFoundException(gameId)
 
         val selectedPosition = game.getSelectedPosition()
         if( selectedPosition != null)
             moveTile(game, selectedPosition, x, y)
 
-        if (!game.canPlayerAct(RequestContext.getClientId())) return toApiGame(game)
+        if (!game.canPlayerAct(RequestContext.clientId)) return toApiGame(game)
         game.clearTileSelection()
-        if (x != null && x < 11 && y != null && y < 11 &&
+        if ( x < 11 && y < 11 &&
             isFigureSelectable(game.players.active, game.getFigure(x, y))
         ) {
             game.selectTile(x, y)
@@ -141,7 +147,7 @@ class GameService(private val gameRepository: GameRepository) {
     fun moveTile(game: MongoGame, selectedModel: TilePosition, x: Int, y: Int): Game {
         val moveTo = TilePosition().apply { setX(x); setY(y) }
 
-        if (!game.canPlayerAct(RequestContext.getClientId()))
+        if (!game.canPlayerAct(RequestContext.clientId))
             return toApiGame(game)
 
         if(!game.board.rows[moveTo.y].cols[moveTo.x].isMoveEnabled)

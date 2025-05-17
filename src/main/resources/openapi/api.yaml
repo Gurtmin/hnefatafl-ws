@@ -213,6 +213,8 @@ components:
       properties:
         player:
           $ref: '#/components/schemas/PlayerEnum'
+      required:
+        - player
     JoinPlayerResponse:
       type: object
       properties:
