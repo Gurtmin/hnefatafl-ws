@@ -57,7 +57,7 @@ tasks.register<JavaExec>("generateFrontendApi") {
         "generate",
         "-g", "typescript-fetch",
         "-i", "src/main/resources/openapi/api.yaml",
-        "-o", "$buildDir/generated/frontend_objects",
+        "-o",  buildDir.resolve("generated/frontend_objects").toString(),
 //    targetDirectory = file("$buildDir/generated/src/main/java")
         "--additional-properties=supportsES6=true,typescriptThreePlus=true,modelPropertyNaming=camelCase"
     )
@@ -66,7 +66,7 @@ tasks.register<JavaExec>("generateFrontendApi") {
 tasks {
     val bootJar by getting(org.springframework.boot.gradle.tasks.bundling.BootJar::class) {
         // Optionally configure the JAR name or other settings
-        mainClass.set("com.example.hnefatafl") // Rep
+        mainClass.set("com.example.hnefatafl.HnefataflBeApplication") // Rep
         archiveFileName.set("hnefatafl-ws.jar")
         // Additional configurations if needed
     }
