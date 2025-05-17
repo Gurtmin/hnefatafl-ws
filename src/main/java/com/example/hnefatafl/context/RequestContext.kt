@@ -2,6 +2,7 @@ package com.example.hnefatafl.context
 
 object RequestContext {
     private val requestIdHolder = ThreadLocal<String>()
+    private val requestCorrelationIdHolder = ThreadLocal<String>()
     @JvmStatic
     var clientId: String
         get() = requestIdHolder.get()
@@ -10,7 +11,15 @@ object RequestContext {
         }
 
     @JvmStatic
+    var correlationId: String
+        get() = requestCorrelationIdHolder.get()
+        set(correlationId) {
+            requestCorrelationIdHolder.set(correlationId)
+        }
+
+    @JvmStatic
     fun clear() {
         requestIdHolder.remove()
+        requestCorrelationIdHolder.remove()
     }
 }
