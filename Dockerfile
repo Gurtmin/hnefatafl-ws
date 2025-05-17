@@ -7,6 +7,7 @@ RUN gradle bootJar --no-daemon --stacktrace
 # Fáze 2: Spuštění aplikace s menším a bezpečnějším image
 #FROM eclipse-temurin:17-jdk-alpine
 FROM eclipse-temurin:17-jre-alpine
+ENV SPRING_PROFILES_ACTIVE=prod
 
 # Vytvoření ne-root uživatele
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
