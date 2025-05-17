@@ -1,6 +1,6 @@
 package com.example.hnefatafl.controller
 
-import com.example.api.model.*
+import com.example.generated.api.model.*
 import com.example.hnefatafl.model.MongoGame
 import com.example.hnefatafl.service.GameService
 import org.springframework.data.domain.PageRequest

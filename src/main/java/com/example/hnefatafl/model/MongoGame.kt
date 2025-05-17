@@ -1,12 +1,12 @@
 package com.example.hnefatafl.model
 
-import com.example.api.model.ActivePlayer
-import com.example.api.model.PlayerEnum
+import com.example.generated.api.model.ActivePlayer
+import com.example.generated.api.model.PlayerEnum
 import com.example.hnefatafl.context.RequestContext
-import com.example.mongo.model.Game
-import com.example.mongo.model.Players
-import com.example.mongo.model.Tile.Figure
-import com.example.mongo.model.TilePosition
+import com.example.generated.mongo.Game
+import com.example.generated.mongo.Players
+import com.example.generated.mongo.Tile.Figure
+import com.example.generated.mongo.TilePosition
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 

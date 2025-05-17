@@ -1,17 +1,17 @@
 package com.example.hnefatafl.service
 
-import com.example.api.model.Game
-import com.example.api.model.JoinPlayerRequest
-import com.example.api.model.PagedGameResponse
-import com.example.api.model.PlayerEnum
+import com.example.generated.api.model.Game
+import com.example.generated.api.model.JoinPlayerRequest
+import com.example.generated.api.model.PagedGameResponse
+import com.example.generated.api.model.PlayerEnum
 import com.example.hnefatafl.context.RequestContext
 import com.example.hnefatafl.exception.ObjectAlreadyExistsException
 import com.example.hnefatafl.exception.ObjectNotFoundException
 import com.example.hnefatafl.mapper.GameMapper.toApiGame
 import com.example.hnefatafl.model.MongoGame
 import com.example.hnefatafl.repository.GameRepository
-import com.example.mongo.model.*
-import com.example.mongo.model.Tile.Figure
+import com.example.generated.mongo.*
+import com.example.generated.mongo.Tile.Figure
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
@@ -162,7 +162,7 @@ class GameService(private val gameRepository: GameRepository) {
 
         if( game.getFigure(moveTo)==Figure.ODIN && (moveTo.x==0 && moveTo.y==0 || moveTo.x==0 && moveTo.y==10 || moveTo.x==10 && moveTo.y==10 || moveTo.x==10 && moveTo.y==0)) {
             game.setFigure(moveTo, Figure.ESCAPED_ODIN)
-            game.state = com.example.mongo.model.Game.State.OVER
+            game.state = com.example.generated.mongo.Game.State.OVER
         }
 
         game.removeTile( moveTo);

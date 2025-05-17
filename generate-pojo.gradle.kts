@@ -5,9 +5,9 @@ plugins {
 
 jsonSchema2Pojo {
     setSource(files("src/main/resources/schema"))
-    targetPackage = "com.example.mongo.model"
+    targetPackage = "com.example.generated.mongo"
 //    targetDirectory = file("$buildDir/generated/src/main/java")
-    targetDirectory = file("src/generated/java")
+    targetDirectory = file("src/main/java")
     isIncludeGeneratedAnnotation = true
     isUseJakartaValidation = true
 }

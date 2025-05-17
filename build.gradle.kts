@@ -43,8 +43,8 @@ tasks.register<JavaExec>("generateApi") {
         "generate",
         "-g", "spring",
         "-i", "src/main/resources/openapi/api.yaml",
-        "-o", "src/generated/java",
-        "--additional-properties=useSpringBoot=true,interfaceOnly=true,modelPackage=com.example.api.model,apiPackage=com.example.api.controller,basePackage=com.example.api,useJakartaEe=true"
+        "-o", "./",
+        "--additional-properties=useSpringBoot=true,interfaceOnly=true,modelPackage=com.example.generated.api.model,apiPackage=com.example.generated.api.controller,basePackage=com.example.generated.api,useJakartaEe=true"
     )
 }
 
@@ -57,7 +57,8 @@ tasks.register<JavaExec>("generateFrontendApi") {
         "generate",
         "-g", "typescript-fetch",
         "-i", "src/main/resources/openapi/api.yaml",
-        "-o", "src/generated/java",
+        "-o", "$buildDir/generated/frontend_objects",
+//    targetDirectory = file("$buildDir/generated/src/main/java")
         "--additional-properties=supportsES6=true,typescriptThreePlus=true,modelPropertyNaming=camelCase"
     )
 }

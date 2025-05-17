@@ -1,11 +1,11 @@
 package com.example.hnefatafl.mapper
 
-import com.example.api.model.*
+import com.example.generated.api.model.*
 import com.example.hnefatafl.model.MongoGame
-import com.example.mongo.model.Board
-import com.example.mongo.model.Row
-import com.example.mongo.model.Tile
-import com.example.mongo.model.TilePosition
+import com.example.generated.mongo.Board
+import com.example.generated.mongo.Row
+import com.example.generated.mongo.Tile
+import com.example.generated.mongo.TilePosition
 import java.util.function.Consumer
 
 object GameMapper {
@@ -25,12 +25,12 @@ object GameMapper {
         return apiGame
     }
 
-    private fun toApiState(mongoState: com.example.mongo.model.Game.State?): State? {
+    private fun toApiState(mongoState: com.example.generated.mongo.Game.State?): State? {
         return if (mongoState == null) null else State.fromValue(mongoState.value())
     }
 
-    fun toApiBoard(mongoBoard: Board?): com.example.api.model.Board {
-        val apiBoard = com.example.api.model.Board()
+    private fun toApiBoard(mongoBoard: com.example.generated.mongo.Board?): com.example.generated.api.model.Board {
+        val apiBoard = com.example.generated.api.model.Board()
         if (mongoBoard != null) {
             mongoBoard.rows.forEach(Consumer { row: Row ->
                 val newRow = BoardRowsInner()
@@ -42,13 +42,13 @@ object GameMapper {
         return apiBoard
     }
 
-    private fun toApiTilePosition(position: TilePosition?): com.example.api.model.TilePosition? {
+    private fun toApiTilePosition(position: TilePosition?): com.example.generated.api.model.TilePosition? {
         return if (position == null) null else TilePosition(position.x, position.y)
     }
 
-    private fun toApiTile(tile: Tile): com.example.api.model.Tile {
-        val newTile = com.example.api.model.Tile()
-        newTile.figure = com.example.api.model.Tile.FigureEnum.fromValue(tile.figure.value())
+    private fun toApiTile(tile: Tile): com.example.generated.api.model.Tile {
+        val newTile = com.example.generated.api.model.Tile()
+        newTile.figure = com.example.generated.api.model.Tile.FigureEnum.fromValue(tile.figure.value())
         newTile.isEnabled = tile.isEnabled
         newTile.isMoveEnabled = tile.isMoveEnabled
         newTile.isSelected = tile.isSelected
