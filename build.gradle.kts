@@ -2,7 +2,6 @@ plugins {
     kotlin("jvm") version "1.9.23"
     id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
-    id("org.jsonschema2pojo") version "1.1.3"
     id("org.jetbrains.kotlin.plugin.spring") version "1.9.23"
 }
 
@@ -15,7 +14,8 @@ repositories {
 }
 
 configurations {
-    create("openapiGenerator")
+    val openapiGenerator by configurations.creating
+//    create("openapiGenerator")
 }
 
 dependencies {
@@ -43,7 +43,7 @@ tasks.register<JavaExec>("generateApi") {
         "generate",
         "-g", "spring",
         "-i", "src/main/resources/openapi/api.yaml",
-        "-o", "$buildDir/generated",
+        "-o", "src/generated/java",
         "--additional-properties=useSpringBoot=true,interfaceOnly=true,modelPackage=com.example.api.model,apiPackage=com.example.api.controller,basePackage=com.example.api,useJakartaEe=true"
     )
 }
@@ -57,7 +57,7 @@ tasks.register<JavaExec>("generateFrontendApi") {
         "generate",
         "-g", "typescript-fetch",
         "-i", "src/main/resources/openapi/api.yaml",
-        "-o", "$buildDir/generated-frontend",
+        "-o", "src/generated/java",
         "--additional-properties=supportsES6=true,typescriptThreePlus=true,modelPropertyNaming=camelCase"
     )
 }
@@ -71,17 +71,20 @@ tasks {
     }
 }
 
-jsonSchema2Pojo {
-    setSource(files("src/main/resources/schema"))
-    setTargetPackage("com.example.mongo.model")
-    setTargetDirectory(file("$buildDir/generated/src/main/java"))
-    isIncludeGeneratedAnnotation = true
-    isUseJakartaValidation = true
+tasks.register<Exec>("generatePojo") {
+    group = "data"
+    description = "Generuje POJO třídy z JSON schema přes externí skript"
+    commandLine = listOf(
+        "./gradlew.bat",
+        "-b", "generate-pojo.gradle.kts",
+        "generateJsonSchema2Pojo"
+    )
 }
 
 sourceSets {
     named("main") {
-        java.srcDir("build/generated/src/main/java")
+        java.srcDir("src/generated/java")
+//        java.srcDir("build/generated/src/main/java")
     }
 }
 

@@ -1,11 +1,12 @@
 # Fáze 1: Build aplikace pomocí Gradle
-FROM gradle:7.6.1-jdk17 AS build
+FROM gradle:8.4-jdk17 AS build
 WORKDIR /build
 COPY . .
 RUN gradle bootJar --no-daemon --stacktrace
 
 # Fáze 2: Spuštění aplikace s menším a bezpečnějším image
-FROM eclipse-temurin:17-jdk-alpine
+#FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 # Vytvoření ne-root uživatele
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
