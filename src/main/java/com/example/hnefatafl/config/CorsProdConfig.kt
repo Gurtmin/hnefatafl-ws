@@ -11,7 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class CorsProdConfig : BaseLoggable(), WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("https://mojefrontendapp.cz")
+            .allowedOrigins("http://hnefatafl.cermak.info")
+            .allowedOrigins("https://hnefatafl.cermak.info")
             .allowedMethods("GET", "POST")
         logger.info("✅ PROD CORS aktivní – povolený origin: XXXX")
     }

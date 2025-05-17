@@ -23,6 +23,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.15")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains:annotations:23.0.0")
