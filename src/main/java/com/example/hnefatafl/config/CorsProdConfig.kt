@@ -12,10 +12,12 @@ class CorsProdConfig : BaseLoggable(), WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowedOrigins(
-                "https://hnefatafl.cermak.info/",
-                "https://peti-hnefatafl.netlify.app/"
+                "https://hnefatafl.cermak.info",
+                "https://peti-hnefatafl.netlify.app"
             )
-            .allowedMethods("GET", "POST")
+            .allowedMethods("GET", "POST", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true)
         logger.warn("✅ PROD CORS aktivní – povolený origin: XXXX")
     }
 }
