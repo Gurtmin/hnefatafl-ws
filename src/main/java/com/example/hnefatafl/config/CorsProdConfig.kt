@@ -7,15 +7,15 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-//@Profile("prod")
+@Profile("prod")
 class CorsProdConfig : BaseLoggable(), WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowedOrigins(
-                "https://hnefatafl.cermak.info",
-                "https://peti-hnefatafl.netlify.app"
+                "https://hnefatafl.cermak.info/",
+                "https://peti-hnefatafl.netlify.app/"
             )
             .allowedMethods("GET", "POST")
-        logger.info("✅ PROD CORS aktivní – povolený origin: XXXX")
+        logger.warn("✅ PROD CORS aktivní – povolený origin: XXXX")
     }
 }
