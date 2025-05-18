@@ -28,7 +28,7 @@ class CorsProdConfig : BaseLoggable(){
 
         source.registerCorsConfiguration("/**", config)
 
-        logger.warn("✅ PROD CORS aktivní – povolený origin: ${config.allowedOrigins.joinToString(", ")}")
+        logger.warn("✅ PROD CORS aktivní – povolený origin: ${config.allowedOrigins?.joinToString(", ")?:"None !!!"}")
 
         return FilterRegistrationBean(CorsFilter(source)).apply {
             order = Ordered.HIGHEST_PRECEDENCE // zajistí, že se aplikuje jako první
