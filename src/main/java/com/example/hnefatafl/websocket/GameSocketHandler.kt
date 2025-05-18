@@ -3,10 +3,12 @@ package com.example.hnefatafl.websocket
 import com.example.hnefatafl.log.BaseLoggable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 
+@Component
 class GameSocketHandler : TextWebSocketHandler() {
     private val logger: Logger = LoggerFactory.getLogger(GameSocketHandler::class.java)
     private val sessions = mutableSetOf<WebSocketSession>()
@@ -22,6 +24,18 @@ class GameSocketHandler : TextWebSocketHandler() {
         sessions.forEach {
             it.sendMessage(TextMessage("Zpráva: ${message.payload}"))
         }
+    }
+
+    fun broadcast(message: String) {
+        val text = TextMessage(message)
+        sessions.forEach {
+            try {
+                if (it.isOpen) it.sendMessage(text)
+            } catch (e: Exception) {
+                logger.warn("❌ Chyba při posílání zprávy: ${e.message}")
+            }
+        }
+        logger.info("📢 Odesláno klientům: $message")
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: org.springframework.web.socket.CloseStatus) {

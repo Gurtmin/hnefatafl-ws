@@ -12,13 +12,17 @@ import com.example.hnefatafl.model.MongoGame
 import com.example.hnefatafl.repository.GameRepository
 import com.example.generated.mongo.*
 import com.example.generated.mongo.Tile.Figure
+import com.example.hnefatafl.websocket.GameSocketHandler
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.stream.Collectors
 
 @Service
-class GameService(private val gameRepository: GameRepository) {
+class GameService(
+    private val gameRepository: GameRepository,
+    private val gameSocketHandler: GameSocketHandler
+) {
     fun createNewGame(type: String): MongoGame {
         if (type.isBlank() || gameRepository.findByType(type)?.isNotEmpty() == true)
             throw ObjectAlreadyExistsException(type)
@@ -172,6 +176,7 @@ class GameService(private val gameRepository: GameRepository) {
         game.switchPlayers()
 
         gameRepository.save(game)
+        gameSocketHandler.broadcast("Hra se změnila!")
         return toApiGame(game)
     }
 
