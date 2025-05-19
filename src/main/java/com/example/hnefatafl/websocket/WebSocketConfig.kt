@@ -19,11 +19,15 @@ class WebSocketConfig(
                                 "https://hnefatafl.cermak.info",
                                 "https://peti-hnefatafl.netlify.app"
                         )
-                        else -> listOf("*")
+                        else -> listOf(
+                                "http://localhost:*",
+                                "https://*.netlify.app",
+                                "https://*.cermak.info"
+                        )
                 }
 
                 registry.addHandler(gameSocketHandler, "/ws/game")
                         .setAllowedOrigins(*allowedOrigins.toTypedArray())
-                logger.info("CORS - Profile[{$profile}]: ${allowedOrigins.joinToString(", ")}")
+                logger.info("WS CORS - Profile[{$profile}]: ${allowedOrigins.joinToString(", ")}")
         }
 }

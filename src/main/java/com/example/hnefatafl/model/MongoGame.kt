@@ -166,12 +166,14 @@ class MongoGame : Game() {
         if( overwhelmCount >= (neededOverwhelmCount[victimFigure]?:0)){
             if(victimFigure==Figure.ODIN) {
                 state = State.OVER
-                setFigure(x, y, Figure.THRONE)
+                setFigure(x, y, Figure.DEAD_ODIN)
             }
             else
                 setFigure(x, y, Figure.EMPTY)
         }
     }
+
+    // TODO kdyz OVER, tak nema jit s nicim jiz hybat
 
     fun removeTile(newPosition: TilePosition) {
         removeVictim( newPosition.x-1, newPosition.y, players.active)

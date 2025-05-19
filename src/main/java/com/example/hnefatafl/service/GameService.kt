@@ -12,6 +12,7 @@ import com.example.hnefatafl.model.MongoGame
 import com.example.hnefatafl.repository.GameRepository
 import com.example.generated.mongo.*
 import com.example.generated.mongo.Tile.Figure
+import com.example.hnefatafl.exception.GameBadStateException
 import com.example.hnefatafl.websocket.GameSocketHandler
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -132,6 +133,9 @@ class GameService(
             .orElseThrow { ObjectNotFoundException(gameId) }
             ?: throw ObjectNotFoundException(gameId)
 
+        if( game.state != com.example.generated.mongo.Game.State.STARTED)
+            throw GameBadStateException( "SelectTile", game.state)
+
         val selectedPosition = game.getSelectedPosition()
         if( selectedPosition != null)
             moveTile(game, selectedPosition, x, y)
@@ -176,7 +180,7 @@ class GameService(
         game.switchPlayers()
 
         gameRepository.save(game)
-        gameSocketHandler.broadcast("Hra se změnila!")
+        gameSocketHandler.broadcast("Hra se změnila!")  // TODO tohle pak upravime aby to posilalo jen tem co je trba, aby byl i typ zpravy apod... Zohlednit abych to neposilal sam sobe atd...
         return toApiGame(game)
     }
 

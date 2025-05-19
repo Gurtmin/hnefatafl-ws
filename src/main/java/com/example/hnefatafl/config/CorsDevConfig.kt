@@ -10,9 +10,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Profile("dev")
 class CorsDevConfig : BaseLoggable(), WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedOrigins("*")
-            .allowedMethods("GET", "POST", "PUT", "DELETE")
-        logger.info("✅ DEV CORS aktivní – povolený origin: *")
+//        registry.addMapping("/**")
+//            .allowedOrigins("*")
+//            .allowedMethods("GET", "POST", "PUT", "DELETE")
+//        logger.info("✅ DEV CORS aktivní – povolený origin: *")
     }
 }
+
+// TODO toto odmazat a CorsProdConfig zmenit na CorsConfig
